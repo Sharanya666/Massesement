@@ -1,0 +1,201 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+    Layout = null;
+}
+<link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+<style>
+    .add {
+        margin-left:600px;
+        float: inline-start;
+    }
+
+    h1 {
+        margin-top:20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-left:500px;
+        color:palevioletred;
+    }
+    .table{
+        background-color:azure;
+        border:groove;
+        border-color:mediumpurple;
+    }
+    
+</style>
+
+<h1>List of Movies</h1>
+    <a asp-controller="Movie" asp-action="Add">
+    <input id="btnAdd" type="button" value="Add" class="add btn btn-success" /></a>
+<br />
+<br />
+<div class="container p-3 my-3 bg-info " >
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>MovieId</th>
+                <th>MovieName</th>
+                <th>ShowTiming</th>
+                <th>Rating</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="Moviedata">
+        </tbody>
+    </table>
+</div>
+
+<div id="editdiv" style="margin-left:500px"  ; >
+    <form>
+        <table>
+            <tr>
+                <td><label>MovieId</label></td>
+                <td>:</td>
+                <td><input id="txtMovieId" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>MovieName</label></td>
+                <td>:</td>
+                <td><input id="txtMovieName" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>ShowTiming</label></td>
+                <td>:</td>
+                <td><input id="txtShowTime" type="text" /></td>
+            </tr>            
+            <tr>
+                <td><label>Rating</label></td>
+                <td>:</td>
+                <td><input id="txtRating" type="text" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td><input id="btnSubmit" class="btn btn-dark" type="button" value="Update" onclick="EditMovieData1()" style="margin-left:50px" /></td>
+            </tr>
+        </table>
+
+    </form>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#editdiv").hide("slow");
+        ShowMovieData();
+    });
+
+    function ShowMovieData() {
+        $("#Moviedata").empty();
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/Movie/GetMovie",
+            crossDomain: true,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var rows = '';
+                for (var i = 0; i < response.length; i++) {
+
+                    rows = rows + "<tr><td>" + response[i].movieId + "</td><td>" + response[i].movieName + "</td><td>" + response[i].showTiming + "</td><td>" + response[i].rating + "</td><td><button id='EditMovie' class='btn btn-dark'  data-id=" + response[i].movieId + " onclick='EditMovieData(this)'>Edit</button></td><td><button id='DeleteMovie' class='btn btn-dark' data-id=" + response[i].movieId + " onclick='DeleteMovieData(this)'>Delete</button></td><td></td></tr>";
+                }
+                $("#Moviedata").append(rows);
+                console.log(response);
+            },
+            failure: function (response) {
+                debugger;
+                alert(response.responseText);
+            },
+            error: function (response) {
+                debugger;
+                alert(response.responseText);
+            },
+        });
+    }
+
+
+    function DeleteMovieData(id1) {
+        $.ajax({
+            type: "DELETE",
+            url: "http://localhost:8080/api/Movie/DeleteMovie?MovieId=" + $(id1).data("id"),
+            crossDomain: true,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                ShowMovieData();
+            },
+            failure: function (response) {
+                debugger;
+                alert(response.responseText);
+            },
+            error: function (response) {
+                debugger;
+                alert(response.responseText);
+            }
+        });
+    }
+
+    function EditMovieData1() {
+
+        var movie = new Object();
+        movie.movieId = $('#txtMovieId').val();
+        movie.movieName = $('#txtMovieName').val();
+        movie.showTiming = $('#txtShowTime').val();
+        movie.rating = $('#txtRating').val();
+        $.ajax({
+            type: "PUT",
+            url: "http://localhost:8080/api/Movie/UpdateMovie",
+            crossDomain: true,
+            data: JSON.stringify(movie),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                alert('Update Succefull');
+            },
+            failure: function (response) {
+                debugger;
+                alert(response.responseText);
+            },
+            error: function (response) {
+                debugger;
+                alert(response.responseText);
+            }
+
+        });
+
+        $("#editdiv").hide("slow");
+    }
+
+    function EditMovieData(ctl) {
+        $("#editdiv").show("slow");
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/Movie/MovieById?MovieId=" + $(ctl).data("id"),
+            crossDomain: true,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $("#txtMovieId").val(response.movieId);
+                $("#txtMovieName").val(response.movieName);
+                $('#txtShowTime').val(response.showTiming);
+                $('#txtRating').val(response.rating);
+            },
+            failure: function (response) {
+                debugger;
+                alert(response.responseText);
+            },
+            error: function (response) {
+                debugger;
+                alert(response.responseText);
+            }
+        });
+
+    }
+</script>

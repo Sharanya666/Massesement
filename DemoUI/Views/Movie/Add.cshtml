@@ -1,0 +1,99 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@{
+    Layout = null;
+}
+<link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+
+<style>
+
+    h2 {
+        margin-top:50px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-left: 500px;
+        color: palevioletred;
+    }
+
+    table {
+        background-color: azure;
+        border: groove;
+        border-color: mediumpurple;        
+        margin-top:60px;
+    }
+    td {
+        padding: 20px;
+    }
+</style>
+<h2>Add Movie Details Here</h2>
+<div class="container">
+    <form>
+        <table class="table table-striped">
+
+            <tr>
+                <td><label>MovieId</label></td>
+                <td>:</td>
+                <td><input id="txtMovieId" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>MovieName</label></td>
+                <td>:</td>
+                <td><input id="txtMovieName" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>showTiming</label></td>
+                <td>:</td>
+                <td><input id="txtShowTime" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>Rating</label></td>
+                <td>:</td>
+                <td><input id="txtRating" type="text" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td><input id="btnSubmit" type="button" class="btn btn-dark" value="Submit" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnSubmit").click(function () {
+            var movie = new Object();
+            movie.movieId = $('#txtMovieId').val();
+            movie.movieName = $('#txtMovieName').val();
+            movie.showTiming = $('#txtShowTime').val();
+            movie.rating = $('#txtRating').val();
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/api/Movie/InsertMovie",
+                crossDomain: true,
+                data: JSON.stringify(movie),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                },
+                failure: function (response) {
+                    debugger;
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    debugger;
+                    alert(response.responseText);
+                }
+            });
+        });
+    });
+</script>
+
